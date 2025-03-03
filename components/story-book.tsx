@@ -212,10 +212,27 @@ export function StoryBook({ userInfo }: StoryBookProps) {
   const handleChoice = async (nextStep: number) => {
     setLoading(true);
     try {
-      const newStep = await generateStoryStep(userInfo, nextStep, previousChoices, visitedSteps.map(step => step.nextStep), language);
+      // Seçilen seçeneği bul
+      const selectedChoice = currentStep?.choices.find(choice => choice.nextStep === nextStep);
+      
+      // Seçim metnini previousChoices dizisine ekle
+      if (selectedChoice) {
+        setPreviousChoices([...previousChoices, selectedChoice.text]);
+      }
+      
+      const newStep = await generateStoryStep(userInfo, nextStep, 
+        selectedChoice ? [...previousChoices, selectedChoice.text] : previousChoices, 
+        visitedSteps.map(step => step.nextStep || 0), 
+        language
+      );
+      
       setCurrentStep(newStep);
       setVisitedSteps([...visitedSteps, newStep]);
-      setPreviousChoices([...previousChoices, newStep.text]);
+      
+      // Süreyi yeniden başlat
+      setTimeLeft(45);
+      setIsTimerActive(true);
+      setShowTimeUpMessage(false);
     } catch (error) {
       console.error('Error:', error);
     }

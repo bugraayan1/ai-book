@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       ${currentStep === 1 ? 
         `Bu ilk adım. Hikayeyi ${userInfo.theme || 'macera'} temasına uygun başlat ve çocuğun ilk kararını vermesini sağla.` :
         `ÖNCEKİ SEÇİMLER:
-        ${previousChoices.map((choice, index) => `${index + 1}. Seçim: ${choice}`).join('\n')}
+        ${previousChoices.map((choice: string, index: number) => `${index + 1}. Seçim: ${choice}`).join('\n')}
         
         ÇOK ÖNEMLİ: Bu seçimlere göre hikayenin akışı kesinlikle mantıklı bir şekilde devam etmeli.
         Her yeni adım, önceki seçimlerin doğrudan bir sonucu olmalı.
@@ -100,7 +100,7 @@ export async function POST(req: Request) {
       ${currentStep === 1 ? 
         `This is the first step. Start the story according to the ${userInfo.theme || 'adventure'} theme and let the child make their first decision.` :
         `PREVIOUS CHOICES:
-        ${previousChoices.map((choice, index) => `Choice ${index + 1}: ${choice}`).join('\n')}
+        ${previousChoices.map((choice: string, index: number) => `Choice ${index + 1}: ${choice}`).join('\n')}
         
         VERY IMPORTANT: The story flow must continue logically based on these choices.
         Each new step must be a direct consequence of previous choices.
@@ -139,7 +139,10 @@ export async function POST(req: Request) {
       throw new Error(language === 'tr' ? "API yanıt vermedi" : "API did not respond");
     }
 
-    return NextResponse.json(JSON.parse(responseData));
+    const parsedResponse = JSON.parse(responseData);
+    parsedResponse.maxDuration = 45;
+
+    return NextResponse.json(parsedResponse);
   } catch (error) {
     console.error("Hikaye oluşturma hatası:", error);
     return NextResponse.json(
@@ -149,7 +152,8 @@ export async function POST(req: Request) {
           { text: "Başa Dön", nextStep: 1 },
           { text: "Tekrar Dene", nextStep: 1 }
         ],
-        animation: "sparkles"
+        animation: "sparkles",
+        maxDuration: 45
       },
       { status: 500 }
     );
