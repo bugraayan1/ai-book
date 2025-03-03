@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -15,7 +15,7 @@ import {
 
 interface Achievement {
   id: string
-  icon: JSX.Element
+  icon: React.ReactElement
   title: string
   description: string
   isUnlocked: boolean
